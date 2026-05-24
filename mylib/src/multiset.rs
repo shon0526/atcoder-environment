@@ -45,10 +45,15 @@ pub mod btree_multiset {
                 map: BTreeMap::new(),
             }
         }
+
+        pub fn clear(&mut self) {
+            self.size = 0;
+            self.map.clear();
+        }
         // 指定した値があるか確認
-        pub fn contains<Q>(&self, value: &T) -> bool
+        pub fn contains<Q>(&self, value: &Q) -> bool
         where
-            T: Borrow<T>,
+            T: Borrow<Q>,
             Q: Ord + ?Sized,
         {
             self.map.contains_key(value)
@@ -110,30 +115,32 @@ pub mod btree_multiset {
         //最小値を取る
         pub fn pop_first(&mut self) -> Option<T>
         where
-            T: Clone,
+            T: Ord + Clone,
         {
-            if self.is_empty() {
-                None
+            let mut entry = self.map.first_entry()?;
+            self.size -= 1;
+            if *entry.get() > 1 {
+                *entry.get_mut() -= 1;
+                Some(entry.key().clone())
             } else {
-                self.size -= 1;
-                let first = self.first().unwrap().clone();
-                self.remove(&first);
-                Some(first)
+                let (key, _) = entry.remove_entry();
+                Some(key)
             }
         }
 
         //最大値を取る
         pub fn pop_last(&mut self) -> Option<T>
         where
-            T: Clone,
+            T: Ord + Clone,
         {
-            if self.is_empty() {
-                None
+            let mut entry = self.map.last_entry()?;
+            self.size -= 1;
+            if *entry.get() > 1 {
+                *entry.get_mut() -= 1;
+                Some(entry.key().clone())
             } else {
-                self.size -= 1;
-                let last = self.last().unwrap().clone();
-                self.remove(&last);
-                Some(last)
+                let (key, _) = entry.remove_entry();
+                Some(key)
             }
         }
 
@@ -301,5 +308,139 @@ pub mod btree_multiset {
         fn next_back(&mut self) -> Option<Self::Item> {
             self.range.next_back()
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::ops::Mul;
+
+    use crate::multiset::btree_multiset::MultiSet;
+
+    use super::btree_multiset;
+
+    #[test]
+    fn test_new() {
+        let set: MultiSet<i32> = MultiSet::new();
+        assert!(set.is_empty());
+        assert_eq!(set.len(), 0);
+    }
+
+    #[test]
+    fn test_default() {
+        let set: MultiSet<i32> = MultiSet::default();
+
+        assert!(set.is_empty());
+        assert_eq!(set.len(), 0);
+    }
+
+    #[test]
+    fn test_from() {
+        let vec = vec![1, 2, 3, 4];
+        let set: MultiSet<i32> = MultiSet::from(vec);
+
+        assert!(!set.is_empty());
+        assert_eq!(set.len(), 4);
+    }
+    #[test]
+    fn test_contains() {
+        let set: MultiSet<i32> = vec![1, 1, 2, 3, 4].into_iter().collect();
+
+        assert!(set.contains(&1));
+        assert!(set.contains(&2));
+        assert!(set.contains(&3));
+        assert!(set.contains(&4));
+        assert!(!set.contains(&5));
+    }
+
+    #[test]
+    fn test_insert() {
+        let mut set: MultiSet<i32> = MultiSet::new();
+
+        set.insert(1);
+        assert!(!set.is_empty());
+        assert_eq!(set.len(), 1);
+        assert_eq!(set.size(), 1);
+        assert!(set.contains(&1));
+        assert_eq!(set.count(&1), 1);
+
+        set.insert(1);
+        assert!(!set.is_empty());
+        assert_eq!(set.len(), 2);
+        assert_eq!(set.size(), 2);
+        assert!(set.contains(&1));
+        assert_eq!(set.count(&1), 2);
+
+        set.insert(2);
+        assert!(!set.is_empty());
+        assert_eq!(set.len(), 2);
+        assert_eq!(set.size(), 3);
+        assert!(set.contains(&2));
+        assert_eq!(set.count(&2), 1);
+    }
+
+    #[test]
+    fn test_first_last() {
+        let mut set: MultiSet<i32> = MultiSet::new();
+
+        assert_eq!(set.first(), None);
+        assert_eq!(set.last(), None);
+
+        set.insert(1);
+        set.insert(2);
+        set.insert(3);
+        set.insert(4);
+
+        assert_eq!(set.first(), Some(&1));
+        assert_eq!(set.last(), Some(&4));
+    }
+
+    #[test]
+    fn test_clear() {
+        let mut set: MultiSet<i32> = vec![1, 2, 3, 4].into_iter().collect();
+        set.clear();
+        assert_eq!(set, MultiSet::from(vec![]));
+    }
+
+    #[test]
+    fn test_merge() {
+        let mut set1: MultiSet<i32> = vec![1, 1, 2].into_iter().collect();
+        let mut set2: MultiSet<i32> = vec![2, 2, 3].into_iter().collect();
+
+        let mergeset = set1.merge(&mut set2);
+        assert_eq!(set1, MultiSet::from(vec![1, 1, 2, 2, 2, 3]));
+        assert_eq!(set1.len(), 3);
+        assert_eq!(set1.size(), 6);
+        assert!(set1.contains(&1));
+        assert!(set1.contains(&2));
+        assert!(set1.contains(&3));
+        assert_eq!(set1.count(&1), 2);
+        assert_eq!(set1.count(&2), 3);
+        assert_eq!(set1.count(&3), 1);
+        assert_eq!(set2, MultiSet::from(vec![2, 2, 3]));
+    }
+
+    #[test]
+    fn test_pop_first_last() {
+        let mut set: MultiSet<i64> = vec![1, 1, 2, 3, 3].into_iter().collect();
+
+        assert_eq!(set.pop_first(), Some(1));
+        assert_eq!(set.size(), 4);
+        assert_eq!(set.count(&1), 1);
+
+        assert_eq!(set.pop_last(), Some(3));
+        assert_eq!(set.size(), 3);
+        assert_eq!(set.count(&3), 1);
+
+        assert_eq!(set.pop_last(), Some(3));
+        assert_eq!(set.size(), 2);
+        assert_eq!(set.count(&3), 0);
+
+        assert_eq!(set.pop_first(), Some(1));
+        assert_eq!(set.pop_first(), Some(2));
+
+        assert_eq!(set.pop_first(), None);
+        assert_eq!(set.pop_last(), None);
+        assert!(set.is_empty());
     }
 }

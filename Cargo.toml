@@ -4,5 +4,8 @@ members = [
     "src/abc458",
     "src/abc455",
     "mylib",
+    "src/awc0073",
+    "src/awc0074",
+    "src/abc459",
 ]
 resolver = "2"
