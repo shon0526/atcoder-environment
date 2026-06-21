@@ -11,3 +11,7 @@ debug/
 
 # 他のファイル
 Cargo.lock
+
+# Python (uv)
+.venv/
+__pycache__/

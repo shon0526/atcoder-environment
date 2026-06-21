@@ -5,8 +5,21 @@ use std::collections::{BinaryHeap, HashMap};
 fn main() {
     input! {
         n: usize,
-        a: [usize; n],
+        k: i64,
+        a: [i64; n],
+        b: [i64; n],
     }
+
+    let res = a.iter().zip(b).map(|(a, b)| (*a - b).abs()).sum::<i64>();
+
+    println!(
+        "{}",
+        if (k - res) >= 0 && (k - res) % 2 == 0 {
+            "Yes"
+        } else {
+            "No"
+        }
+    );
 }
 
 #[macro_export]

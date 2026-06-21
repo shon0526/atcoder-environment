@@ -1,11 +1,22 @@
 use num_traits::pow;
 use proconio::{input, marker::Usize1};
-use std::collections::{BinaryHeap, HashMap};
+use std::collections::{BinaryHeap, HashMap, HashSet};
 
 fn main() {
     input! {
         n: usize,
-        a: [usize; n],
+        ss: [String; n],
+    }
+
+    let mut set = HashSet::new();
+
+    for i in 0..n {
+        if set.contains(&ss[i]) {
+            continue;
+        }
+
+        println!("{}", i + 1);
+        set.insert(&ss[i]);
     }
 }
 
