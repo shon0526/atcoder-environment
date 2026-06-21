@@ -4,9 +4,13 @@ use std::collections::{BinaryHeap, HashMap};
 
 fn main() {
     input! {
-        n: usize,
-        a: [usize; n],
+        a: u128,
+        b: u128,
+        c: u128,
     }
+
+    let ans = a < c.pow(b as u32);
+    println!("{}", if ans { "Yes" } else { "No" });
 }
 
 #[macro_export]

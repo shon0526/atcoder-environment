@@ -1,12 +1,32 @@
 use num_traits::pow;
 use proconio::{input, marker::Usize1};
+use std::cmp::min;
 use std::collections::{BinaryHeap, HashMap};
 
 fn main() {
     input! {
-        n: usize,
-        a: [usize; n],
+        n: i64,
+        a: i64,
+        b: i64,
+        c: i64,
     }
+
+    let mut ans = i64::MAX;
+
+    for x in 0..10000 {
+        for y in 0..10000 {
+            if x + y >= 10000 {
+                continue;
+            }
+
+            let res: i64 = n - a * x - b * y;
+            if res >= 0 && res % c == 0 {
+                let z = res / c;
+                ans = min(ans, x + y + z);
+            }
+        }
+    }
+    println!("{}", ans);
 }
 
 #[macro_export]

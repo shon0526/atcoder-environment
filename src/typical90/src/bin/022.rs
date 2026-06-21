@@ -1,12 +1,18 @@
+use num::Integer;
 use num_traits::pow;
 use proconio::{input, marker::Usize1};
 use std::collections::{BinaryHeap, HashMap};
 
 fn main() {
     input! {
-        n: usize,
-        a: [usize; n],
+        a: usize,
+        b: usize,
+        c: usize,
     }
+
+    let w = a.gcd(&b).gcd(&c);
+    let ans = (a / w - 1) + (b / w - 1) + (c / w - 1);
+    println!("{}", ans);
 }
 
 #[macro_export]
