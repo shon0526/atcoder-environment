@@ -19,16 +19,18 @@ if [ -f "$TEMPLATE" ] && [ -d "$BIN_DIR" ]; then
     echo "[template] $BIN_DIR/*.rs を snippets/snippet.rs で初期化しました"
 fi
 
-# ストレステスト用ディレクトリ・ファイルを snippets/stress の雛形から作成
+# ランダムテスト用ディレクトリ・ファイルを snippets/stress の雛形から作成
+# （既存ディレクトリでも、足りないファイルだけを個別に補充する）
 STRESS_TEMPLATE="$SCRIPT_DIR/snippets/stress"
 STRESS_DIR="$SCRIPT_DIR/src/${CONTEST}/stress"
-if [ -d "$STRESS_TEMPLATE" ] && [ ! -d "$STRESS_DIR" ]; then
+if [ -d "$STRESS_TEMPLATE" ]; then
     mkdir -p "$STRESS_DIR"
-    cp "$STRESS_TEMPLATE/stress.py" "$STRESS_DIR/stress.py"
-    cp "$STRESS_TEMPLATE/gen.py" "$STRESS_DIR/gen.py"
-    # README は __CONTEST__ を実際のコンテスト ID に置換して配置
-    sed "s/__CONTEST__/${CONTEST}/g" "$STRESS_TEMPLATE/README.md" > "$STRESS_DIR/README.md"
-    echo "[stress] $STRESS_DIR にストレステストの雛形を作成しました"
+    for f in naive_test.rs gen.py; do
+        if [ ! -f "$STRESS_DIR/$f" ]; then
+            cp "$STRESS_TEMPLATE/$f" "$STRESS_DIR/$f"
+            echo "[stress] $STRESS_DIR/$f を作成しました"
+        fi
+    done
 fi
 
 if grep -qF "\"src/${CONTEST}\"" "$CARGO_TOML"; then
