@@ -72,4 +72,3 @@ cargo run --bin abc461-c < stress/ng_c.txt   # 反例のデバッグ
   問題に合わせて書き換える。インタラクティブ問題は対象外。
 - 旧方式（`stress.py` + `<problem>_naive.rs` の別バイナリ比較）はレガシーであり、
   過去コンテストのディレクトリに残っているものは履歴として保持するのみで新規には使わない。
-- 設計の詳細は `docs/random-test-redesign.md` を参照。
