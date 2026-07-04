@@ -1,3 +1,4 @@
+use ac_library::ModInt1000000007;
 use num_traits::pow;
 use proconio::{input, marker::Usize1};
 use std::collections::{BinaryHeap, HashMap};
@@ -5,8 +6,20 @@ use std::collections::{BinaryHeap, HashMap};
 fn main() {
     input! {
         n: usize,
-        a: [usize; n],
+        l: usize,
     }
+
+    let mut dp = vec![ModInt1000000007::new(0); n + 1];
+
+    dp[0] = ModInt1000000007::new(1);
+
+    for i in 0..n {
+        dp[i + 1] = dp[i + 1] + dp[i];
+        if i + l <= n {
+            dp[i + l] = dp[i + l] + dp[i];
+        }
+    }
+    println!("{}", dp[n]);
 }
 
 #[macro_export]

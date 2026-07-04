@@ -1,13 +1,5 @@
-use num_traits::pow;
+use itertools::Itertools;
 use proconio::{input, marker::Usize1};
-use std::collections::{BinaryHeap, HashMap};
-
-fn main() {
-    input! {
-        n: usize,
-        a: [usize; n],
-    }
-}
 
 #[macro_export]
 macro_rules! define_queries {
@@ -38,4 +30,40 @@ macro_rules! define_queries {
       }
     )*
   }
+}
+
+define_queries! {
+    enum Query: usize {
+        1 => Swap { x: Usize1, y: Usize1 },
+        2 => Rotate { x: usize, y: usize },
+        _ => Get { x: Usize1, y: usize },
+    }
+}
+
+fn main() {
+    input! {
+        n: usize,
+        q: usize,
+        a: [usize; n],
+    }
+
+    let mut a = a.iter().copied().collect_vec();
+    let mut s = 0;
+    let idx = |s: usize, x: usize| (s + x) % n;
+
+    for _ in 0..q {
+        input! { query: Query }
+
+        match query {
+            Query::Swap { x, y } => {
+                a.swap(idx(s, x), idx(s, y));
+            }
+            Query::Rotate { .. } => {
+                s = (s + n - 1) % n;
+            }
+            Query::Get { x, .. } => {
+                println!("{}", a[idx(s, x)]);
+            }
+        }
+    }
 }

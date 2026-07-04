@@ -15,22 +15,9 @@ def main() -> None:
     seed = int(sys.argv[1])
     random.seed(seed)
 
-    n = random.randint(1, 8)
-    k = random.randint(1, n)
-
-    # 各宝石の色を 1..N からランダムに割り当てる。
-    colors = [random.randint(1, n) for _ in range(n)]
-    distinct = len(set(colors))
-
-    # M は K 以下かつ「実際に存在する色の種類数」以下にする。
-    m = random.randint(1, min(k, distinct))
-
-    lines = [f"{n} {k} {m}"]
-    for c in colors:
-        v = random.randint(1, 20)
-        lines.append(f"{c} {v}")
-
-    print("\n".join(lines))
+    n = random.randint(1, 10001)
+    l = random.randint(2, 10001)
+    print(f"{n} {l}")
 
 
 if __name__ == "__main__":
