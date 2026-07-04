@@ -1,12 +1,33 @@
+use ac_library::{ModInt1000000007, StaticModInt};
+use az::UnwrappedAs;
+use itertools::Itertools;
 use num_traits::pow;
 use proconio::{input, marker::Usize1};
 use std::collections::{BinaryHeap, HashMap};
 
+type ModInt = ModInt1000000007;
+
 fn main() {
     input! {
         n: usize,
-        a: [usize; n],
+        a: [[usize; 6]; n],
     }
+
+    let a = a
+        .iter()
+        .map(|a| {
+            let mut vec = Vec::new();
+            for i in 0..6 {
+                vec.push(ModInt1000000007::new(a[i]));
+            }
+            vec
+        })
+        .collect_vec();
+    let ans = a
+        .iter()
+        .map(|a| a.iter().sum::<ModInt>())
+        .product::<ModInt>();
+    println!("{}", ans);
 }
 
 #[macro_export]

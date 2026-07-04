@@ -1,12 +1,44 @@
+use itertools::Itertools;
 use num_traits::pow;
 use proconio::{input, marker::Usize1};
-use std::collections::{BinaryHeap, HashMap};
+use std::cmp::min;
+use std::collections::{BinaryHeap, HashMap, HashSet};
 
 fn main() {
     input! {
         n: usize,
-        a: [usize; n],
+        a: [[usize; n]; n],
+        m: usize,
+        xy: [(Usize1, Usize1); m],
     }
+
+    let mut ps = (0..n).permutations(n).collect_vec();
+    let mut ans = usize::MAX;
+
+    let mut set = HashSet::new();
+    for &(x, y) in &xy {
+        set.insert((x, y));
+    }
+
+    for p in ps {
+        let mut res = a[p[0]][0];
+        let mut is_ok = true;
+
+        for i in 1..n {
+            let pre = p[i - 1];
+            let now = p[i];
+            if set.contains(&(pre, now)) || set.contains(&(now, pre)) {
+                is_ok = false;
+                continue;
+            }
+            res += a[p[i]][i];
+        }
+        if is_ok {
+            ans = min(ans, res);
+        }
+    }
+
+    println!("{}", if ans != usize::MAX { ans as i64 } else { -1 });
 }
 
 #[macro_export]

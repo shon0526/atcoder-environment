@@ -6,7 +6,34 @@ fn main() {
     input! {
         n: usize,
         a: [usize; n],
+        b: [usize; n],
+        c: [usize; n],
     }
+
+    let bk = |vec: &Vec<usize>| {
+        let mut vector: Vec<usize> = vec![0; 46];
+        for &v in vec {
+            vector[v % 46] += 1;
+        }
+        vector
+    };
+
+    let a = bk(&a);
+    let b = bk(&b);
+    let c = bk(&c);
+    let mut ans = 0;
+
+    for (i, &va) in a.iter().enumerate() {
+        for (j, &vb) in b.iter().enumerate() {
+            for (k, &vc) in c.iter().enumerate() {
+                if (i + j + k) % 46 == 0 {
+                    ans += va * vb * vc;
+                }
+            }
+        }
+    }
+
+    println!("{}", ans);
 }
 
 #[macro_export]

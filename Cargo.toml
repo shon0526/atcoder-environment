@@ -38,5 +38,13 @@ members = [
     "src/abc462",
     "src/agc026",
     "src/abc463",
+    "src/abc103",
+    "src/abc450",
+    "src/abc464",
+    "src/abc089",
+    "src/abc200",
+    "src/abc141",
+    "src/abc129",
+    "src/abc190",
 ]
 resolver = "2"

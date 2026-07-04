@@ -1,12 +1,28 @@
+use itertools::Itertools;
 use num_traits::pow;
 use proconio::{input, marker::Usize1};
-use std::collections::{BinaryHeap, HashMap};
+use std::collections::{BinaryHeap, HashMap, HashSet};
 
 fn main() {
     input! {
         n: usize,
-        a: [usize; n],
+        mut k: usize,
+        ab: [(usize, usize); n],
     }
+
+    let mut heap = BinaryHeap::new();
+
+    for &(a, b) in &ab {
+        heap.push(b);
+        heap.push(a - b);
+    }
+    let mut ans = 0;
+
+    for _ in 0..k {
+        ans += heap.pop().unwrap();
+    }
+
+    println!("{}", ans);
 }
 
 #[macro_export]
