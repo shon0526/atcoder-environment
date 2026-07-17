@@ -1,57 +1,48 @@
+use itertools::Itertools;
 use num_traits::pow;
-use proconio::{input, marker::Usize1};
-use std::{
-    collections::{BTreeMap, BinaryHeap, HashMap, HashSet},
-    process,
-};
+use proconio::{input, marker::Usize1, source::once::OnceSource};
+use std::cmp::max;
+use std::collections::{BinaryHeap, HashMap};
 
-const MOD: usize = 100_000;
+// 入力文字列をパースして答えの文字列を返す。
+// ランダムテスト時は同コンテストの stress/naive_test.rs をこのファイル末尾に
+// 貼り付けて naive と比較する(詳細はリポジトリルートの README.md)。
+fn solve(input_str: &str) -> String {
+    let mut source = OnceSource::from(input_str);
+    input! {
+        from &mut source,
+        n: usize,
+        a: [usize; n],
+    }
+    todo!()
+}
 
 fn main() {
     input! {
         n: usize,
-        mut k: usize,
+        m: usize,
+        cs: [(Usize1, usize); n],
     }
 
-    if n == 0 {
-        println!("{}", 0);
-        process::exit(0);
+    let mut cl_vec = vec![0; m];
+
+    for &(c, s) in &cs {
+        cl_vec[c] = max(cl_vec[c], s);
     }
 
-    let mut num_vec = vec![0; 100_000];
-
-    let mut lp_size = 0;
-    let mut cnt = 0;
-    let mut z = n;
-    loop {
-        cnt += 1;
-        z = sum_digit(z) % MOD;
-        if num_vec[z] != 0 {
-            lp_size = cnt - num_vec[z];
-            break;
-        } else {
-            num_vec[z] = cnt;
-        }
-    }
-
-    if k > cnt {
-        k = (k - num_vec[z]) % lp_size + num_vec[z];
-    }
-
-    let mut ans = n;
-    for i in 0..k {
-        ans = sum_digit(ans) % MOD;
-    }
-    println!("{}", ans);
-}
-
-fn sum_digit(num: usize) -> usize {
-    let mut num_dig = num.clone();
-    let mut s_dig = num_dig.to_string();
-    for c in s_dig.chars() {
-        num_dig += c.to_string().parse::<usize>().unwrap();
-    }
-    num_dig
+    println!(
+        "{}",
+        cl_vec
+            .iter()
+            .map(|&v| {
+                if v > 0 {
+                    v as i64
+                } else {
+                    -1
+                }
+            })
+            .join(" ")
+    );
 }
 
 #[macro_export]
