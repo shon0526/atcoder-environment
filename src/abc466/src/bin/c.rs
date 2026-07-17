@@ -1,29 +1,55 @@
-use itertools::Itertools;
 use num_traits::pow;
-use proconio::{input, marker::Usize1};
+use proconio::{
+    input, input_interactive, marker::Usize1, source::line::LineSource, source::once::OnceSource,
+};
 use std::collections::{BinaryHeap, HashMap};
+use std::io::{stdin, stdout, BufReader, Write};
+
+// 入力文字列をパースして答えの文字列を返す。
+// ランダムテスト時は同コンテストの stress/naive_test.rs をこのファイル末尾に
+// 貼り付けて naive と比較する(詳細はリポジトリルートの README.md)。
+fn solve(input_str: &str) -> String {
+    let mut source = OnceSource::from(input_str);
+    input! {
+        from &mut source,
+        n: usize,
+        a: [usize; n],
+    }
+    todo!()
+}
 
 fn main() {
-    input! {
+    let stdin = stdin();
+
+    input_interactive! {
         n: usize,
-        p: u128,
-        q: u128,
-        a: [u128; n],
     }
 
     let mut ans = 0;
+    let mut r = 2;
 
-    for comb in a.iter().combinations(5) {
-        let mut tol = 1;
-        for &v in comb {
-            tol = (tol * v) % p;
+    for l in 1..=n {
+        while r <= n {
+            println!("? {} {}", l, r);
+            // interactive
+            input_interactive! {
+                s: String,
+            }
+
+            if s == "Yes" {
+                r += 1;
+            } else {
+                break;
+            }
         }
-        if tol == q {
-            ans += 1;
+
+        ans += r - l - 1;
+
+        if l + 1 == r {
+            r += 1;
         }
     }
-
-    println!("{}", ans);
+    println!("! {}", ans);
 }
 
 #[macro_export]

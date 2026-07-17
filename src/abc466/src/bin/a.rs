@@ -1,40 +1,35 @@
 use num_traits::pow;
-use proconio::{input, marker::Usize1};
-use std::collections::{BinaryHeap, HashMap, VecDeque};
+use proconio::{input, marker::Usize1, source::once::OnceSource};
+use std::collections::{BinaryHeap, HashMap};
+
+// 入力文字列をパースして答えの文字列を返す。
+// ランダムテスト時は同コンテストの stress/naive_test.rs をこのファイル末尾に
+// 貼り付けて naive と比較する(詳細はリポジトリルートの README.md)。
+fn solve(input_str: &str) -> String {
+    let mut source = OnceSource::from(input_str);
+    input! {
+        from &mut source,
+        n: usize,
+        a: [usize; n],
+    }
+    todo!()
+}
 
 fn main() {
-    define_queries! {
-        enum Query: usize  {
-            1 => Top { x: usize},
-            2 => Buttom { x: usize },
-            3 =>  Write { x: usize},
-        }
-    }
-
     input! {
-        q: usize,
-        queries: [Query; q],
+        n: usize,
+        xs: [i64; n],
     }
 
-    let mut a = vec![0; 1_000_000];
-    let mut cr = 1_000_000 / 2;
-    let mut cl = 1_000_000 / 2;
+    let mut is_ok = true;
 
-    for query in queries {
-        match query {
-            Query::Top { x } => {
-                a[cl - 1] = x;
-                cl -= 1;
-            }
-            Query::Buttom { x } => {
-                a[cr] = x;
-                cr += 1;
-            }
-            Query::Write { x } => {
-                println!("{}", a[cl + x - 1]);
-            }
+    for x in xs {
+        if x >= 0 {
+            is_ok = false;
         }
     }
+
+    println!("{}", if is_ok { "Yes" } else { "No" });
 }
 
 #[macro_export]
