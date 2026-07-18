@@ -1,38 +1,26 @@
 use num_traits::pow;
-use proconio::{
-    input,
-    marker::{Chars, Usize1},
-    source::once::OnceSource,
-};
+use proconio::{input, marker::Usize1, source::once::OnceSource};
 use std::collections::{BinaryHeap, HashMap};
 
 // 入力文字列をパースして答えの文字列を返す。
 // ランダムテスト時は同コンテストの stress/naive_test.rs をこのファイル末尾に
 // 貼り付けて naive と比較する(詳細はリポジトリルートの README.md)。
-fn solve(input_str: &str) {
+fn solve(input_str: &str) -> String {
     let mut source = OnceSource::from(input_str);
     input! {
         from &mut source,
-        h: usize,
-        w: usize,
-        k: usize,
-        s: [Chars; h],
+        n: usize,
+        m: usize,
     }
 
-    let mut ans = 0;
-    let mut prefix: Vec<Vec<usize>> = vec![vec![0; w]; h];
-
-    for i in 0..h {
-        for j in 0..w {
-            prefix[i][j] = s[i][j].to_string().parse::<usize>().unwrap();
-        }
-    }
+    let ans = (n - 1) * (m - 1);
+    ans.to_string()
 }
 
 fn main() {
     let mut buf = String::new();
     std::io::Read::read_to_string(&mut std::io::stdin(), &mut buf).unwrap();
-    solve(&buf)
+    println!("{}", solve(&buf));
 }
 
 #[macro_export]
