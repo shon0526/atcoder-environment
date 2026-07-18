@@ -9,14 +9,21 @@ cargo compete new "$@"
 
 CONTEST="${@: -1}"
 
+# edition を 2024 に書き換え（AtCoder ジャッジ環境に合わせる）
+CONTEST_CARGO_TOML="$SCRIPT_DIR/src/${CONTEST}/Cargo.toml"
+if [ -f "$CONTEST_CARGO_TOML" ]; then
+  sed -i '' 's/^edition = "2021"/edition = "2024"/' "$CONTEST_CARGO_TOML"
+  echo "[edition] $CONTEST_CARGO_TOML の edition を 2024 に変更しました"
+fi
+
 # 生成された各 bin ファイルを snippets/snippet.rs の内容で上書き
 BIN_DIR="$SCRIPT_DIR/src/${CONTEST}/src/bin"
 if [ -f "$TEMPLATE" ] && [ -d "$BIN_DIR" ]; then
-    for binfile in "$BIN_DIR"/*.rs; do
-        [ -f "$binfile" ] || continue
-        cp "$TEMPLATE" "$binfile"
-    done
-    echo "[template] $BIN_DIR/*.rs を snippets/snippet.rs で初期化しました"
+  for binfile in "$BIN_DIR"/*.rs; do
+    [ -f "$binfile" ] || continue
+    cp "$TEMPLATE" "$binfile"
+  done
+  echo "[template] $BIN_DIR/*.rs を snippets/snippet.rs で初期化しました"
 fi
 
 # ランダムテスト用ディレクトリ・ファイルを snippets/stress の雛形から作成
@@ -24,24 +31,24 @@ fi
 STRESS_TEMPLATE="$SCRIPT_DIR/snippets/stress"
 STRESS_DIR="$SCRIPT_DIR/src/${CONTEST}/stress"
 if [ -d "$STRESS_TEMPLATE" ]; then
-    mkdir -p "$STRESS_DIR"
-    for f in naive_test.rs gen.py; do
-        if [ ! -f "$STRESS_DIR/$f" ]; then
-            cp "$STRESS_TEMPLATE/$f" "$STRESS_DIR/$f"
-            echo "[stress] $STRESS_DIR/$f を作成しました"
-        fi
-    done
+  mkdir -p "$STRESS_DIR"
+  for f in naive_test.rs gen.py; do
+    if [ ! -f "$STRESS_DIR/$f" ]; then
+      cp "$STRESS_TEMPLATE/$f" "$STRESS_DIR/$f"
+      echo "[stress] $STRESS_DIR/$f を作成しました"
+    fi
+  done
 fi
 
 if grep -qF "\"src/${CONTEST}\"" "$CARGO_TOML"; then
-    echo "[workspace] src/${CONTEST} は既に Cargo.toml に登録済みです"
-    exit 0
+  echo "[workspace] src/${CONTEST} は既に Cargo.toml に登録済みです"
+  exit 0
 fi
 
 # members の閉じ ] の直前に新エントリを挿入（最初の ] のみ対象）
 awk -v entry="    \"src/${CONTEST}\"," '
     /^\]$/ && !done { print entry; done=1 }
     { print }
-' "$CARGO_TOML" > "${CARGO_TOML}.tmp" && mv "${CARGO_TOML}.tmp" "$CARGO_TOML"
+' "$CARGO_TOML" >"${CARGO_TOML}.tmp" && mv "${CARGO_TOML}.tmp" "$CARGO_TOML"
 
 echo "[workspace] src/${CONTEST} を Cargo.toml に追加しました"
