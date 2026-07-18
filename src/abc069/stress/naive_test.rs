@@ -37,21 +37,21 @@ mod random_tests {
 
     // gen_<PROBLEM>.py に seed を渡して実行し、生成された入力文字列を返す。
     fn generate(seed: u64) -> String {
-        let gen_path = stress_path(&format!("gen_{PROBLEM}.py"));
+        let gen = stress_path(&format!("gen_{PROBLEM}.py"));
         assert!(
-            gen_path.exists(),
+            gen.exists(),
             "ジェネレータがありません: {}\nstress/gen.py をコピーして gen_{PROBLEM}.py を作成してください。",
-            gen_path.display(),
+            gen.display(),
         );
         let output = Command::new("python3")
-            .arg(&gen_path)
+            .arg(&gen)
             .arg(seed.to_string())
             .output()
             .expect("python3 の起動に失敗");
         assert!(
             output.status.success(),
             "{} が異常終了 (seed={seed}):\n{}",
-            gen_path.display(),
+            gen.display(),
             String::from_utf8_lossy(&output.stderr),
         );
         String::from_utf8(output.stdout).expect("gen の出力が UTF-8 でない")

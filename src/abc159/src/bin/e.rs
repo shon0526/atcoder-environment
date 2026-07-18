@@ -1,14 +1,7 @@
-use num_traits::pow;
-use proconio::{
-    input,
-    marker::{Chars, Usize1},
-    source::once::OnceSource,
-};
+use proconio::{input, marker::Chars, source::once::OnceSource};
 use std::cmp::min;
-use std::collections::{BinaryHeap, HashMap};
 
 const INF: usize = usize::MAX;
-const PROBLEM: &str = "c";
 
 // 入力文字列をパースして答えの文字列を返す。
 // ランダムテスト時は同コンテストの stress/naive_test.rs をこのファイル末尾に
@@ -23,61 +16,59 @@ fn solve(input_str: &str) -> String {
         s: [Chars;h],
     }
 
-    let mut ans = INF;
-    for bit in 0..1 << h {
-        let mut vec_size = 0;
-        for i in 0..h {
-            if (bit & (1 << i)) != 0 {
-                vec_size += 1;
-            }
-        }
+    let mut res = 1 << 29;
 
-        let mut cnt_vec = vec![0; vec_size + 1];
+    for bit in 0..(1 << (h - 1)) {
+        let mut gok = true;
+        let mut n = 0;
+        let mut ord = vec![0; h];
 
-        let mut cnt_v = 0;
-        for j in 0..w {
-            let mut now_vec = vec![0; vec_size + 1];
-            let mut is_ok = false;
-
-            let mut idx = 0;
-            for i in 0..h {
-                if (bit & (1 << i)) != 0 {
-                    if s[i][j] == '1' {
-                        now_vec[idx] += 1;
-                        if cnt_vec[idx] + now_vec[idx] > k {
-                            is_ok = true;
-                            cnt_v += 1;
-                        }
-                    }
-                    idx += 1;
-                } else {
-                    if s[i][j] == '1' {
-                        now_vec[idx] += 1;
-                        if cnt_vec[idx] + now_vec[idx] > k {
-                            is_ok = true;
-                            cnt_v += 1;
-                        }
-                    }
-                }
-            }
-            if is_ok {
-                cnt_vec = now_vec.clone();
+        for i in 0..h - 1 {
+            if (bit & 1 << i) != 0 {
+                ord[i + 1] = ord[i] + 1;
+                n += 1;
             } else {
-                for i in 0..vec_size + 1 {
-                    cnt_vec[i] += now_vec[i];
-                }
+                ord[i + 1] = ord[i];
             }
         }
 
-        ans = min(ans, vec_size + cnt_v);
+        let mut add = 0;
+        let mut nums = vec![0; n + 1];
+
+        for j in 0..w {
+            let mut ones = vec![0; n + 1];
+            let mut is_ok = true;
+
+            for i in 0..h {
+                if s[i][j] == '1' {
+                    ones[ord[i]] += 1;
+                    nums[ord[i]] += 1;
+                }
+                if ones[ord[i]] > k {
+                    gok = false;
+                }
+                if nums[ord[i]] > k {
+                    is_ok = false;
+                }
+            }
+
+            if !is_ok {
+                nums = ones;
+                add += 1;
+            }
+        }
+
+        if gok {
+            res = min(res, n + add);
+        }
     }
-    ans.to_string()
+    res.to_string()
 }
 
 fn main() {
-    let mut input = String::new();
-    std::io::Read::read_to_string(&mut std::io::stdin(), &mut input).unwrap();
-    println!("{}", solve(&input));
+    let mut buf = String::new();
+    std::io::Read::read_to_string(&mut std::io::stdin(), &mut buf).unwrap();
+    println!("{}", solve(&buf));
 }
 
 #[macro_export]
@@ -118,19 +109,65 @@ mod random_tests {
     use std::process::Command;
 
     /// 問題名。gen_<PROBLEM>.py / ng_<PROBLEM>.txt の名前解決に使う。
-    const PROBLEM: &str = "a";
+    const PROBLEM: &str = "e";
     /// 試行回数。seed は 0..TRIALS の連番なので毎回同じ入力列になる。
     const TRIALS: u64 = 500;
 
-    // 愚直解。solve と同じシグネチャで、正しさ優先で実装する。
     fn naive(input_str: &str) -> String {
         let mut source = OnceSource::from(input_str);
         input! {
             from &mut source,
-            n: usize,
-            a: [usize; n],
+            h: usize,
+            w: usize,
+            k: usize,
+            s: [Chars; h],
         }
-        todo!()
+
+        let mut ans = h + w;
+        for hbit in 0u32..1 << (h - 1) {
+            for vbit in 0u32..1 << (w - 1) {
+                let cuts = (hbit.count_ones() + vbit.count_ones()) as usize;
+
+                let mut row_bounds = vec![0];
+                for i in 0..h - 1 {
+                    if hbit & (1 << i) != 0 {
+                        row_bounds.push(i + 1);
+                    }
+                }
+                row_bounds.push(h);
+
+                let mut col_bounds = vec![0];
+                for j in 0..w - 1 {
+                    if vbit & (1 << j) != 0 {
+                        col_bounds.push(j + 1);
+                    }
+                }
+                col_bounds.push(w);
+
+                let mut valid = true;
+                'outer: for ri in 0..row_bounds.len() - 1 {
+                    for ci in 0..col_bounds.len() - 1 {
+                        let mut count = 0;
+                        for r in row_bounds[ri]..row_bounds[ri + 1] {
+                            for c in col_bounds[ci]..col_bounds[ci + 1] {
+                                if s[r][c] == '1' {
+                                    count += 1;
+                                }
+                            }
+                        }
+                        if count > k {
+                            valid = false;
+                            break 'outer;
+                        }
+                    }
+                }
+
+                if valid {
+                    ans = min(ans, cuts);
+                }
+            }
+        }
+        ans.to_string()
     }
 
     // CARGO_MANIFEST_DIR (= src/<contest>) 基準で stress/ 内のパスを返す。
@@ -142,21 +179,21 @@ mod random_tests {
 
     // gen_<PROBLEM>.py に seed を渡して実行し、生成された入力文字列を返す。
     fn generate(seed: u64) -> String {
-        let gen = stress_path(&format!("gen_{PROBLEM}.py"));
+        let gen_path = stress_path(&format!("gen_{PROBLEM}.py"));
         assert!(
-            gen.exists(),
+            gen_path.exists(),
             "ジェネレータがありません: {}\nstress/gen.py をコピーして gen_{PROBLEM}.py を作成してください。",
-            gen.display(),
+            gen_path.display(),
         );
         let output = Command::new("python3")
-            .arg(&gen)
+            .arg(&gen_path)
             .arg(seed.to_string())
             .output()
             .expect("python3 の起動に失敗");
         assert!(
             output.status.success(),
             "{} が異常終了 (seed={seed}):\n{}",
-            gen.display(),
+            gen_path.display(),
             String::from_utf8_lossy(&output.stderr),
         );
         String::from_utf8(output.stdout).expect("gen の出力が UTF-8 でない")
