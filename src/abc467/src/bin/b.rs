@@ -18,20 +18,18 @@ fn solve(input_str: &str) -> String {
 fn main() {
     input! {
         n: usize,
-        abc: [(usize, usize, String); n],
+        abs: [(usize,usize,String); n],
     }
 
-    let mut cond = 0;
-    let mut all = 0;
+    let diff = abs
+        .iter()
+        .filter(|(_, _, s)| *s == "take".to_string())
+        .map(|(a, b, _)| b - a)
+        .sum::<usize>();
 
-    for (a, b, c) in &abc {
-        all += (b - a);
-        if *c == "take".to_string() {
-            cond += (b - a);
-        }
-    }
+    let diff2 = abs.iter().map(|(a, b, _)| b - a).sum::<usize>();
 
-    println!("{}", all - cond);
+    println!("{}", diff2 - diff);
 }
 
 #[macro_export]

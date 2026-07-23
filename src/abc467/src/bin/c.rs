@@ -16,6 +16,8 @@ fn solve(input_str: &str) -> String {
     todo!()
 }
 
+const INF: usize = usize::MAX;
+
 fn main() {
     input! {
         n: usize,
@@ -24,9 +26,41 @@ fn main() {
         b: [usize; n-1],
     }
 
-    let mut cnt_1 = 0;
+    let mut dp = vec![vec![INF; 2]; n];
 
-    H
+    if a[0] == 0 {
+        dp[0][0] = 0;
+        dp[0][1] = 1;
+    } else {
+        dp[0][0] = 1;
+        dp[0][1] = 0;
+    }
+
+    for i in 0..n - 1 {
+        if b[i] == 0 {
+            // a[i+1] == 0
+            if a[i + 1] == 0 {
+                dp[i + 1][0] = dp[i + 1][0].min(dp[i][0]);
+                dp[i + 1][1] = dp[i + 1][1].min(dp[i][1] + 1);
+            } else {
+                dp[i + 1][0] = dp[i + 1][0].min(dp[i][0] + 1);
+                dp[i + 1][1] = dp[i + 1][1].min(dp[i][1]);
+            }
+
+            // a[i+1] == 1
+        } else {
+            // a[i+1] == 0
+            if a[i + 1] == 0 {
+                dp[i + 1][0] = dp[i + 1][0].min(dp[i][1]);
+                dp[i + 1][1] = dp[i + 1][1].min(dp[i][0] + 1);
+            } else {
+                dp[i + 1][0] = dp[i + 1][0].min(dp[i][1] + 1);
+                dp[i + 1][1] = dp[i + 1][1].min(dp[i][0]);
+            }
+            // a[i+1] == 1
+        }
+    }
+    println!("{:?}", dp[n - 1][0].min(dp[n - 1][1]));
 }
 #[macro_export]
 macro_rules! define_queries {

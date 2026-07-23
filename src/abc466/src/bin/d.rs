@@ -22,33 +22,19 @@ fn main() {
         rc: [(usize, usize); m],
     }
 
-    let mut line_vec = vec![vec![]; n + 1];
-    let mut row_vec = vec![vec![]; n + 1];
-
-    for &(r, c) in &rc {
-        line_vec[r] = vec![];
-        row_vec[c] = vec![];
-        line_vec[r].push(c);
-        row_vec[c].push(r);
-    }
-
-    let mut line_set = HashSet::new();
-
-    for (i, line) in line_vec.iter().enumerate() {
-        for &v in line {
-            line_set.insert((i, v));
-        }
-    }
+    let mut rused = vec![false; n + 1];
+    let mut cused = vec![false; n + 1];
 
     let mut ans = 0;
 
-    for (i, row) in row_vec.iter().enumerate() {
-        for &v in row {
-            if line_set.contains(&(v, i)) {
-                ans += 1;
-            }
+    for &(r, c) in rc.iter().rev() {
+        if !rused[r] && !cused[c] {
+            ans += 1;
         }
+        rused[r] = true;
+        cused[c] = true;
     }
+
     println!("{}", ans);
 }
 
