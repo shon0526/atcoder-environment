@@ -19,8 +19,6 @@ fn solve(input_str: &str) -> String {
 }
 
 fn main() {
-    let stdin = stdin();
-
     input_interactive! {
         n: usize,
     }
@@ -29,8 +27,12 @@ fn main() {
     let mut r = 2;
 
     for l in 1..=n {
+        if l == r {
+            r += 1;
+        }
         while r <= n {
             println!("? {} {}", l, r);
+            std::io::stdout().flush().unwrap();
             // interactive
             input_interactive! {
                 s: String,
@@ -44,10 +46,6 @@ fn main() {
         }
 
         ans += r - l - 1;
-
-        if l + 1 == r {
-            r += 1;
-        }
     }
     println!("! {}", ans);
 }

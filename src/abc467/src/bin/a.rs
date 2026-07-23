@@ -12,7 +12,14 @@ fn main() {
         w: usize,
     }
 
-    println!("{}", if w * 10000 >= 25 * h * h { "Yes" } else { "No" });
+    println!(
+        "{}",
+        if 10000 * w / (h * h) >= 25 {
+            "Yes"
+        } else {
+            "No"
+        }
+    );
 }
 
 #[macro_export]
