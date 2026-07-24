@@ -434,5 +434,44 @@
       "    }",
       "}"
     ]
+  },
+  "vector_op": {
+    "prefix": "vector_op",
+    "body": [
+      "pub mod vector {",
+      "    use std::ops::{Add, Mul, Sub};",
+      "    #[derive(Debug)]",
+      "    pub struct Vector2d<T> {",
+      "        x: T,",
+      "        y: T,",
+      "    }",
+      "    impl<T> Vector2d<T>",
+      "    where",
+      "        T: Add<Output = T> + Sub<Output = T> + Mul<Output = T>,",
+      "    {",
+      "        pub fn new(x: T, y: T) -> Vector2d<T> {",
+      "            Vector2d { x, y }",
+      "        }",
+      "        pub fn add(self, v: Vector2d<T>) -> Vector2d<T> {",
+      "            Vector2d {",
+      "                x: self.x + v.x,",
+      "                y: self.y + v.y,",
+      "            }",
+      "        }",
+      "        pub fn sub(self, v: Vector2d<T>) -> Vector2d<T> {",
+      "            Vector2d {",
+      "                x: self.x - v.x,",
+      "                y: self.y - v.y,",
+      "            }",
+      "        }",
+      "        pub fn inner_product(self, v: Vector2d<T>) -> T {",
+      "            self.x * v.x + self.y * v.y",
+      "        }",
+      "        pub fn cross(self, v: Vector2d<T>) -> T {",
+      "            self.x * v.y - self.y * v.x",
+      "        }",
+      "    }",
+      "}"
+    ]
   }
 }
