@@ -1,51 +1,49 @@
 use itertools::Itertools;
 use num_traits::pow;
-use proconio::{input, marker::Usize1};
-use std::collections::{BinaryHeap, HashMap};
+use permutohedron::LexicalPermutation;
+use proconio::{input, marker::Usize1, source::once::OnceSource};
+use std::{
+    collections::{BinaryHeap, HashMap},
+    process,
+};
+
+// 入力文字列をパースして答えの文字列を返す。
+// ランダムテスト時は同コンテストの stress/naive_test.rs をこのファイル末尾に
+// 貼り付けて naive と比較する(詳細はリポジトリルートの README.md)。
+fn solve(input_str: &str) {
+    let mut source = OnceSource::from(input_str);
+    input! {
+        from &mut source,
+        n: usize,
+        p: [usize; n],
+        q: [usize; n],
+    }
+
+    let mut ans = if p >= q {
+        0
+    } else {
+        let mut cur = p;
+        let mut cnt = 0;
+
+        loop {
+            cur.next_permutation();
+            if cur >= q {
+                break;
+            } else {
+                cnt += 1;
+            }
+        }
+
+        cnt
+    };
+
+    println!("{}", ans);
+}
 
 fn main() {
-    input! {
-        n: usize,
-        q: usize,
-        a: [i64; n],
-        lrv: [(Usize1, Usize1, i64); q],
-    }
-
-    let mut ans: i64 = 0;
-
-    for i in 0..n - 1 {
-        ans += (a[i] - a[i + 1]).abs();
-    }
-
-    let mut b = vec![0; n - 1];
-
-    for i in 0..n - 1 {
-        // 階差を考える
-        b[i] += (a[i] - a[i + 1]);
-    }
-
-    for &(l, r, v) in &lrv {
-        if l == 0 && r == n - 1 {
-            println!("{}", ans);
-            continue;
-        } else if l == 0 {
-            ans -= b[r].abs();
-            b[r] += v;
-            ans += b[r].abs();
-        } else if r == n - 1 {
-            ans -= b[l - 1].abs();
-            b[l - 1] -= v;
-            ans += b[l - 1].abs();
-        } else {
-            ans -= b[l - 1].abs();
-            ans -= b[r].abs();
-            b[l - 1] -= v;
-            b[r] += v;
-            ans += b[l - 1].abs();
-            ans += b[r].abs();
-        }
-        println!("{}", ans);
-    }
+    let mut buf = String::new();
+    std::io::Read::read_to_string(&mut std::io::stdin(), &mut buf).unwrap();
+    solve(&buf)
 }
 
 #[macro_export]
