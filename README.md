@@ -42,14 +42,144 @@ cargp compete submit <probelm>
 （既存ディレクトリでも足りないファイルだけ補充される）。
 
 ### 各問題でやること（必要な問題だけ）
-1. `src/<contest>/stress/naive_test.rs` の内容を解答ファイル `<problem>.rs` の末尾に貼り付ける
-2. `PROBLEM` 定数を問題名に合わせ、`naive` を実装する（遅くてよいので確実に正しい解法）
-3. `gen.py` を `gen_<problem>.py` にコピーして制約に合わせて実装する
+1. 解答ファイルの `main` の中身を `fn solve(input_str: &str) -> String` に切り出し、`main` を stdin 読み込みと `println!("{}", solve(&buf))` の 3 行にする
+2. `src/<contest>/stress/naive_test.rs` の内容を解答ファイル `<problem>.rs` の末尾に貼り付ける
+3. `PROBLEM` 定数を問題名に合わせ、`naive` を実装する（遅くてよいので確実に正しい解法）
+4. `gen.py` を `gen_<problem>.py` にコピーして制約に合わせて実装する
+
+以下は各ステップの詳細（例: `src/abc999` の `a.rs`、N と長さ N の配列 `a` を受け取り、
+総和を出力する問題）。
+
+#### 1. main を solve に切り出す
+
+`./compete-new.sh` 直後の `a.rs` は次の形（`snippets/snippet.rs` そのまま）。
+
+```rust
+#![allow(unused_imports, dead_code)]
+use itertools::Itertools;
+use proconio::input;
+use proconio::marker::{Chars, Usize1};
+use std::cmp::Reverse;
+use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, VecDeque};
+
+fn main() {
+    input! {
+        n: usize,
+        a: [usize; n],
+    }
+}
+```
+
+`input!` の中身を書きながら解答を完成させたら、`main` の本体を
+`solve(input_str: &str) -> String` へ丸ごと移し、`main` を stdin 読み込みと
+出力の 3 行だけにする。
+
+```rust
+// 入力文字列をパースして答えの文字列を返す。
+fn solve(input_str: &str) -> String {
+    let mut source = proconio::source::once::OnceSource::from(input_str);
+    input! {
+        from &mut source,
+        n: usize,
+        a: [usize; n],
+    }
+    a.iter().sum::<usize>().to_string()
+}
+
+fn main() {
+    let mut buf = String::new();
+    std::io::Read::read_to_string(&mut std::io::stdin(), &mut buf).unwrap();
+    println!("{}", solve(&buf));
+}
+```
+
+複数行を出力する問題は `Vec<String>` に貯めて `.join("\n")` で 1 つの
+`String` にまとめて返す。
+
+#### 2. naive_test.rs を末尾に貼り付ける
+
+```bash
+cat src/abc999/stress/naive_test.rs >> src/abc999/src/bin/a.rs
+```
+
+貼り付けると `a.rs` の末尾に `#[cfg(test)] mod random_tests { ... }` が
+追加される。このブロックは提出ビルドには含まれないので、貼り付けたまま
+提出してよい。
+
+#### 3. PROBLEM 定数を合わせる
+
+問題が `a` なら、貼り付けたブロック内の定数はそのままでよい。
+`b`, `c` ... の場合は書き換える。
+
+```rust
+const PROBLEM: &str = "a";
+```
+
+この値が `gen_<PROBLEM>.py` / `ng_<PROBLEM>.txt` のファイル名解決に使われる。
+
+#### 4. naive を実装する
+
+`todo!()` になっている `naive` を、遅くてよいので確実に正しいロジックで
+埋める。`solve` の結果には依存させず、入力を独立に読み直すこと（`solve`
+にバグがあっても `naive` 側では顕在化しないようにするため）。
+
+```rust
+// 愚直解。solve の結果に依存させず入力を独立に読み直し、正しさ優先で実装する。
+fn naive(input_str: &str) -> String {
+    let mut source = OnceSource::from(input_str);
+    input! {
+        from &mut source,
+        n: usize,
+        a: [usize; n],
+    }
+    let mut sum = 0usize;
+    for x in &a {
+        sum += x;
+    }
+    sum.to_string()
+}
+```
+
+#### 5. gen.py を gen_\<problem\>.py にコピーして実装する
+
+```bash
+cp src/abc999/stress/gen.py src/abc999/stress/gen_a.py
+```
+
+`gen_a.py` を問題の制約・入出力形式に合わせて書き換える。`argv[1]` が
+seed として渡されるので、`random.seed(seed)` で再現性を持たせる。反例を
+見つけやすいよう N 等は小さめ（1〜8 程度）にするのが基本。
+
+```python
+import random
+import sys
+
+
+def main() -> None:
+    seed = int(sys.argv[1])
+    random.seed(seed)
+
+    n = random.randint(1, 8)
+    values = [random.randint(1, 20) for _ in range(n)]
+
+    print(n)
+    print(*values)
+
+
+if __name__ == "__main__":
+    main()
+```
 
 ### 実行手順
 各コンテストのディレクトリ（`src/<contest>`）内で下記のコマンドを実行する。
 ```bash
 cargo test --bin <contest>-<problem>
+```
+
+全 seed（`0..TRIALS`）で `solve` と `naive` の出力が一致すれば成功する。
+
+```
+test random_tests::stress ... ok
 ```
 
 不一致が出ると seed・入力・両出力を panic メッセージに表示し、入力を
