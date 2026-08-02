@@ -1,5 +1,25 @@
 // ==== ランダムテスト(必要な問題にのみ、解答ファイルの末尾に貼り付ける) ====
 // モジュール全体が #[cfg(test)] のため、提出ビルドには含まれない。
+//
+// 貼り付ける前に、main を次の形に書き換える(元の main の本体を solve へ移す):
+//
+//   // 入力文字列をパースして答えの文字列を返す。
+//   fn solve(input_str: &str) -> String {
+//       let mut source = proconio::source::once::OnceSource::from(input_str);
+//       input! {
+//           from &mut source,
+//           n: usize,
+//           a: [usize; n],
+//       }
+//       todo!()  // 複数行出力は Vec<String> に貯めて join("\n") で返す
+//   }
+//
+//   fn main() {
+//       let mut buf = String::new();
+//       std::io::Read::read_to_string(&mut std::io::stdin(), &mut buf).unwrap();
+//       println!("{}", solve(&buf));
+//   }
+//
 // 貼り付け後にやること:
 //   1. PROBLEM 定数を問題名(a, b, c, ...)に合わせる
 //   2. naive を実装する(遅くてよいので確実に正しい解法)
@@ -9,15 +29,16 @@
 #[cfg(test)]
 mod random_tests {
     use super::*;
-    use proconio::{input, source::once::OnceSource};
+    use proconio::source::once::OnceSource;
     use std::process::Command;
 
     /// 問題名。gen_<PROBLEM>.py / ng_<PROBLEM>.txt の名前解決に使う。
     const PROBLEM: &str = "a";
-    /// 試行回数。seed は 0..TRIALS の連番なので毎回同じ入力列になる。
-    const TRIALS: u64 = 500;
+    /// 試行回数。1 seed ごとに python3 を起動するため、15〜30 秒かかる 500 回ではなく 200 回に抑える。
+    /// seed は 0..TRIALS の連番なので毎回同じ入力列になる。
+    const TRIALS: u64 = 200;
 
-    // 愚直解。solve と同じシグネチャで、正しさ優先で実装する。
+    // 愚直解。solve の結果に依存させず入力を独立に読み直し、正しさ優先で実装する。
     fn naive(input_str: &str) -> String {
         let mut source = OnceSource::from(input_str);
         input! {
