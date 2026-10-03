@@ -41,4 +41,9 @@ impl UnionFind {
     pub fn same(&mut self, x: usize, y: usize) -> bool {
         self.find(x) == self.find(y)
     }
+
+    // 頂点xが所属しているグループの人数を返す
+    fn size(x: usize) -> usize {
+        todo!();
+    }
 }

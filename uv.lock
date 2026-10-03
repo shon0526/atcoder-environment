@@ -5,6 +5,9 @@ requires-python = ">=3.13"
 [manifest]
 members = [
     "atcoder-stress",
+    "calc",
+    "calc-387",
+    "calc-473",
     "comf",
 ]
 
@@ -12,6 +15,21 @@ members = [
 name = "atcoder-stress"
 version = "0.1.0"
 source = { virtual = "." }
+
+[[package]]
+name = "calc"
+version = "0.1.0"
+source = { virtual = "src/typical90/calc" }
+
+[[package]]
+name = "calc-387"
+version = "0.1.0"
+source = { virtual = "src/abc387/calc_387" }
+
+[[package]]
+name = "calc-473"
+version = "0.1.0"
+source = { virtual = "src/abc473/calc_473" }
 
 [[package]]
 name = "comf"

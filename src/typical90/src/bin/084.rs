@@ -1,12 +1,38 @@
+use itertools::Itertools;
 use num_traits::pow;
-use proconio::{input, marker::Usize1};
+use proconio::{
+    input,
+    marker::{Chars, Usize1},
+};
 use std::collections::{BinaryHeap, HashMap};
 
 fn main() {
     input! {
         n: usize,
-        a: [usize; n],
+        s: String,
     }
+
+    let s = s.chars().collect_vec();
+    let mut ans = 0;
+
+    let mut a = vec![0; n + 1];
+    let mut b = vec![0; n + 1];
+
+    for i in 1..n + 1 {
+        if s[i - 1] == 'o' {
+            a[i] = i;
+            b[i] = b[i - 1];
+        } else {
+            b[i] = i;
+            a[i] = a[i - 1];
+        }
+    }
+
+    for i in 1..n + 1 {
+        ans += a[i].min(b[i]);
+    }
+
+    println!("{}", ans);
 }
 
 #[macro_export]
