@@ -7,4 +7,9 @@ dependencies = []
 [tool.uv.workspace]
 members = [
     "src/abc467/comf",
+    "src/typical90/calc",
+    "src/abc473/calc",
+    "src/abc473/calc_473",
+    "src/abc474/calc",
+    "src/abc387/calc_387",
 ]

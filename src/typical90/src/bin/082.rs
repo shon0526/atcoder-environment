@@ -1,41 +1,31 @@
 use num_traits::pow;
-use proconio::{input, marker::Usize1};
+use proconio::input;
 use std::collections::{BinaryHeap, HashMap};
+
+const MOD: i128 = 1_000_000_007;
 
 fn main() {
     input! {
-        n: usize,
-        a: [usize; n],
+        l: i128,
+        r: i128,
     }
+
+    let mut ans = 0;
+    for i in 1..=19 {
+        ans += cn(i, l, r);
+    }
+
+    println!("{}", ans % MOD);
 }
 
-#[macro_export]
-macro_rules! define_queries {
-  ($( $(#[$attr:meta])* enum $enum_name:ident : $sig:ty { $( $pattern:pat => $variant:ident $( { $($name:ident : $marker:ty $(,)?),* } )? $(,)?),* } )*) => {
-    $(
-      $(#[$attr])*
-      enum $enum_name {
-        $(
-          $variant $( {
-            $( $name : <$marker as proconio::source::Readable>::Output ),*
-          } )?
-        ),*
-      }
+fn cn(n: usize, l: i128, r: i128) -> i128 {
+    let max = l.max(pow(10, n - 1));
+    let min = r.min(pow(10, n) - 1);
 
-      impl proconio::source::Readable for $enum_name {
-        type Output = Self;
-        fn read<R: std::io::BufRead, S: proconio::source::Source<R>>(source: &mut S) -> Self {
-          #![allow(unreachable_patterns)]
-          match <$sig as proconio::source::Readable>::read(source) {
-            $(
-              $pattern => $enum_name::$variant $( {
-                $( $name: <$marker as proconio::source::Readable>::read(source) ),*
-              } )?
-            ),*
-            , _ => unreachable!()
-          }
-        }
-      }
-    )*
-  }
+    let mut count = (sigma(min) - sigma(max - 1)).rem_euclid(MOD);
+    (n as i128 * count) % MOD
+}
+
+fn sigma(x: i128) -> i128 {
+    (x * (x + 1) / 2) % MOD
 }

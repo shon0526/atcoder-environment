@@ -1,6 +1,10 @@
 pub mod grid;
+pub mod math;
 pub mod multiset;
 pub mod queries;
 pub mod queue;
+pub mod range_max_segtree;
+pub mod range_sum_segtree;
+pub mod scc;
 pub mod union_find;
 pub mod vector_op;
