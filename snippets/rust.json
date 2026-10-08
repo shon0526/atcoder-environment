@@ -322,34 +322,6 @@
       "}"
     ]
   },
-  "math": {
-    "prefix": "math",
-    "body": [
-      "pub mod math {",
-      "    pub fn prime_fact(n: usize) -> Vec<(usize, usize)> {",
-      "        if n < 4 {",
-      "            return vec![(n, 1)];",
-      "        }",
-      "        let mut n = n;",
-      "        let mut fact = Vec::new();",
-      "        for i in 2..=n.isqrt() {",
-      "            if n % i == 0 {",
-      "                let mut cnt = 0;",
-      "                while n % i == 0 {",
-      "                    cnt += 1;",
-      "                    n /= i;",
-      "                }",
-      "                fact.push((i, cnt));",
-      "            }",
-      "        }",
-      "        if n != 1 {",
-      "            fact.push((n, 1));",
-      "        }",
-      "        fact",
-      "    }",
-      "}"
-    ]
-  },
   "queue": {
     "prefix": "queue",
     "body": [
@@ -670,9 +642,6 @@
       "    }",
       "    pub fn same(&mut self, x: usize, y: usize) -> bool {",
       "        self.find(x) == self.find(y)",
-      "    }",
-      "    fn size(x: usize) -> usize {",
-      "        todo!();",
       "    }",
       "}"
     ]
