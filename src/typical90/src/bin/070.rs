@@ -1,12 +1,34 @@
+use itertools::Itertools;
 use num_traits::pow;
 use proconio::{input, marker::Usize1};
-use std::collections::{BinaryHeap, HashMap};
+use std::collections::{BinaryHeap, HashMap, HashSet};
 
+// https://atcoder.jp/contests/typical90/editorial
+// 発電所の座標を(a, b)で置いておく
+// |x_1 - a| + |y_1 - b| + |x_2 - a| + |y_2 - b| + ...
+// xとyを独立に考えることができる -> (|x_1 - a | * |x_2 - a| + ...) + (|y_1 - b| + |y_2 - b| + ...)
+//
 fn main() {
     input! {
         n: usize,
-        a: [usize; n],
+        xy: [(i64, i64); n],
     }
+
+    let mut xs = xy.iter().map(|(x, _)| x).collect_vec();
+    let mut ys = xy.iter().map(|(_, y)| y).collect_vec();
+
+    xs.sort();
+    ys.sort();
+
+    let mx = xs[n / 2];
+    let my = ys[n / 2];
+
+    let mut ans = 0;
+    for &(x, y) in &xy {
+        ans += (x - mx).abs() + (y - my).abs();
+    }
+
+    println!("{}", ans);
 }
 
 #[macro_export]

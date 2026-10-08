@@ -3,5 +3,7 @@ name = "mylib"
 version = "0.1.0"
 edition = "2021"
 
+[workspace]
+
 [dependencies]
 cargo-snippet = "0.6.5"

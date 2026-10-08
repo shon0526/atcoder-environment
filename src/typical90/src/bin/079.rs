@@ -1,41 +1,35 @@
+use itertools::Itertools;
 use num_traits::pow;
 use proconio::{input, marker::Usize1};
 use std::collections::{BinaryHeap, HashMap};
 
+const RANGE: [(usize, usize); 4] = [(0, 0), (1, 0), (0, 1), (1, 1)];
+
 fn main() {
     input! {
-        n: usize,
-        a: [usize; n],
+        h: usize,
+        w: usize,
+        mut a: [[i64; w]; h],
+        mut b: [[i64; w]; h],
     }
-}
 
-#[macro_export]
-macro_rules! define_queries {
-  ($( $(#[$attr:meta])* enum $enum_name:ident : $sig:ty { $( $pattern:pat => $variant:ident $( { $($name:ident : $marker:ty $(,)?),* } )? $(,)?),* } )*) => {
-    $(
-      $(#[$attr])*
-      enum $enum_name {
-        $(
-          $variant $( {
-            $( $name : <$marker as proconio::source::Readable>::Output ),*
-          } )?
-        ),*
-      }
+    let mut ans = 0;
 
-      impl proconio::source::Readable for $enum_name {
-        type Output = Self;
-        fn read<R: std::io::BufRead, S: proconio::source::Source<R>>(source: &mut S) -> Self {
-          #![allow(unreachable_patterns)]
-          match <$sig as proconio::source::Readable>::read(source) {
-            $(
-              $pattern => $enum_name::$variant $( {
-                $( $name: <$marker as proconio::source::Readable>::read(source) ),*
-              } )?
-            ),*
-            , _ => unreachable!()
-          }
+    for i in 0..h - 1 {
+        for j in 0..w - 1 {
+            let d = b[i][j] - a[i][j];
+            a[i][j] += d;
+            a[i][j + 1] += d;
+            a[i + 1][j] += d;
+            a[i + 1][j + 1] += d;
+            ans += d.abs();
         }
-      }
-    )*
-  }
+    }
+
+    if a == b {
+        println!("Yes");
+        println!("{}", ans);
+    } else {
+        println!("No");
+    }
 }

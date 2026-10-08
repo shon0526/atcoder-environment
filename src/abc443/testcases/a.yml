@@ -1,0 +1,27 @@
+---
+type: Batch
+timelimit: ~
+match: Lines
+
+cases:
+  - name: sample1
+    in: |
+      http
+    out: |
+      https
+  - name: sample2
+    in: |
+      append
+    out: |
+      appends
+  - name: sample3
+    in: |
+      beginner
+    out: |
+      beginners
+
+extend:
+  - type: Text
+    path: "./a"
+    in: /in/*.txt
+    out: /out/*.txt

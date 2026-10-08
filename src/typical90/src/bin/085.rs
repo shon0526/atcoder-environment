@@ -2,11 +2,30 @@ use num_traits::pow;
 use proconio::{input, marker::Usize1};
 use std::collections::{BinaryHeap, HashMap};
 
+// aの候補は、1からk^{1/3}個ある
+// 各aに対してb, cを求める -> b * c = k / a ( a <= b <= c)を求める
+// o(k^{2/3})かな
+
 fn main() {
     input! {
-        n: usize,
-        a: [usize; n],
+        k: usize,
     }
+
+    let mut ans = 0;
+    for a in (1..=10000).filter(|&x| x * x * x <= k) {
+        if k % a != 0 {
+            continue;
+        }
+
+        let div = k / a;
+
+        for b in 1..=div.isqrt() {
+            if div % b == 0 && a <= b {
+                ans += 1;
+            }
+        }
+    }
+    println!("{}", ans);
 }
 
 #[macro_export]

@@ -1,85 +1,51 @@
+use itertools::Itertools;
 use num_traits::pow;
 use proconio::{
     input,
-    marker::{Chars, Usize1},
+    marker::{Bytes, Chars, Usize1},
     source::once::OnceSource,
 };
-use std::collections::{BinaryHeap, HashMap};
+use std::collections::{BTreeSet, BinaryHeap, HashMap};
 
-// 入力文字列をパースして答えの文字列を返す。
-// ランダムテスト時は同コンテストの stress/naive_test.rs をこのファイル末尾に
-// 貼り付けて naive と比較する(詳細はリポジトリルートの README.md)。
+// https://atcoder.jp/contests/abc447/tasks/abc447_d
+// あるAに対してそれより右側にある最短のBとCを見つける
+
 fn solve(input_str: &str) {
     let mut source = OnceSource::from(input_str);
     input! {
         from &mut source,
-        s: Chars,
+        s: Bytes,
     }
 
-    let n = s.len();
-    let mut b_idx = 1;
-    let mut c_idx: usize = 2;
+    let mut n = s.len();
     let mut ans = 0;
+    let mut set_a = s
+        .iter()
+        .copied()
+        .positions(|c| c == b'A')
+        .collect::<BTreeSet<_>>();
 
-    if n < 3 {
-        println!("{}", ans);
-        return;
+    let mut set_c = s
+        .iter()
+        .copied()
+        .positions(|c| c == b'C')
+        .collect::<BTreeSet<_>>();
+
+    for i in 0..n {
+        if s[i] == b'B' {
+            let mut a_min = set_a.range(..i).min().copied();
+            let mut c_min = set_c.range(i..).min().copied();
+
+            if let Some(a) = a_min {
+                if let Some(c) = c_min {
+                    set_a.remove(&a);
+                    set_c.remove(&c);
+                    ans += 1;
+                }
+            }
+        }
     }
 
-    for i in 0..n - 2 {
-        if s[i] != 'A' {
-            continue;
-        }
-        let mut is_b = false;
-        let mut is_c = false;
-
-        if i > b_idx {
-            b_idx = i + 1;
-        }
-
-        loop {
-            if b_idx > n - 2 {
-                break;
-            }
-
-            if s[b_idx] == 'B' {
-                is_b = true;
-                break;
-            }
-
-            b_idx += 1;
-        }
-        if b_idx > n - 2 {
-            break;
-        }
-
-        if b_idx > c_idx {
-            c_idx = b_idx + 1;
-        }
-
-        loop {
-            if c_idx > n - 1 {
-                break;
-            }
-
-            if s[c_idx] == 'C' {
-                is_c = true;
-                break;
-            }
-
-            c_idx += 1;
-        }
-
-        if c_idx > n - 1 {
-            break;
-        }
-
-        if is_b && is_c {
-            ans += 1;
-        }
-        b_idx += 1;
-        c_idx += 1;
-    }
     println!("{}", ans);
 }
 
