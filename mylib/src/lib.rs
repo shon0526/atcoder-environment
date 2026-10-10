@@ -1,4 +1,5 @@
 pub mod grid;
+pub mod interval_set;
 pub mod math;
 pub mod multiset;
 pub mod queries;
