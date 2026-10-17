@@ -1,7 +1,17 @@
-name: library-test
-on: push
+name: CI
+on: 
+  pull_request: 
+    branches:
+      - main
+    path:
+      - 'mylib/**'
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 jobs:
   test:
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
       - run: echo "Hello world"
