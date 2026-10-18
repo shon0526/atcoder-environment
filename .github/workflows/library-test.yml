@@ -13,6 +13,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@1.89.0
-      - run: cargo test -- --manifest--path mylib/Cargo.toml
+      - run: cargo test --manifest-path mylib/Cargo.toml
