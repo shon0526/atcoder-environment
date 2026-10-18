@@ -15,4 +15,4 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@1.89.0
-      - run: cargo test --manifest--path mylib/Cargo.toml
+      - run: cargo test -- --manifest--path mylib/Cargo.toml
