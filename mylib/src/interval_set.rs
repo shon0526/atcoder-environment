@@ -119,7 +119,7 @@ pub mod interval_set {
                 .take_while(|(_, &right)| l < right)
             {
                 rem_v.push(left);
-                ch_length += right - left;
+                ch_length -= right - left;
 
                 if left < l {
                     add_v.push((left, l));
@@ -288,6 +288,53 @@ pub mod test {
         assert_eq!(
             interval_set.ranges().collect::<Vec<(i64, i64)>>(),
             vec![(-3, 8)]
+        );
+    }
+
+    #[test]
+    fn test_remove_range() {
+        // [-1, 5)
+        let mut interval_set = IntervalSet::new();
+        interval_set.insert_range(-1, 5);
+
+        assert_eq!(interval_set.len(), 6);
+        assert_eq!(interval_set.count(), 1);
+        assert_eq!(
+            interval_set.ranges().collect::<Vec<(i64, i64)>>(),
+            vec![(-1_i64, 5_i64)]
+        );
+
+        interval_set.remove_range(2, 4);
+        assert_eq!(interval_set.len(), 4);
+        assert_eq!(interval_set.count(), 2);
+        assert_eq!(
+            interval_set.ranges().collect::<Vec<(i64, i64)>>(),
+            vec![(-1, 2), (4, 5)]
+        );
+
+        interval_set.remove_range(-2, 0);
+        assert_eq!(interval_set.len(), 3);
+        assert_eq!(interval_set.count(), 2);
+        assert_eq!(
+            interval_set.ranges().collect::<Vec<(i64, i64)>>(),
+            vec![(0, 2), (4, 5)]
+        );
+
+        interval_set.remove_range(4, 6);
+        assert_eq!(interval_set.len(), 2);
+        assert_eq!(interval_set.count(), 1);
+        assert_eq!(
+            interval_set.ranges().collect::<Vec<(i64, i64)>>(),
+            vec![(0, 2)]
+        );
+
+        interval_set.remove_range(2, 3);
+        assert_eq!(interval_set.len(), 2);
+        assert_eq!(interval_set.count(), 1);
+
+        assert_eq!(
+            interval_set.ranges().collect::<Vec<(i64, i64)>>(),
+            vec![(0, 2)]
         );
     }
 }
