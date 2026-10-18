@@ -5,8 +5,9 @@ on:
       - main
     paths:
       - 'mylib/**'
-  push:
+
   workflow_dispatch:
+
 jobs:
   fmt:
     name: Format
