@@ -1,13 +1,23 @@
 name: LIBRARY-TEST
 on: 
-  # pull_request: 
-  #   branches:
-  #     - main
-  #   paths:
-  #     - 'mylib/**'
+  pull_request: 
+    branches:
+      - main
+    paths:
+      - 'mylib/**'
   push:
   workflow_dispatch:
 jobs:
+  fmt:
+    name: Format
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@1.89.0
+        with:
+          components: rustfmt
+
   test:
     name: cargo test
     runs-on: ubuntu-24.04
