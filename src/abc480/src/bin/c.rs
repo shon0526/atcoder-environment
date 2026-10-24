@@ -4,7 +4,7 @@ use proconio::input;
 use proconio::marker::{Chars, Usize1};
 use std::cmp::Reverse;
 use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, VecDeque};
-
+//https://github.com/shon0526/atcoder-environment
 fn main() {
     input! {
         n: usize,
