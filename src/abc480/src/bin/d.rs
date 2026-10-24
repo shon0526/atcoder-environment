@@ -9,6 +9,8 @@ use superslice::Ext;
 // 必要な配列
 // Aの累積和
 // 長さNの配列Bを用意する (個数の累積和を管理)
+// https://github.com/shon0526/atcoder-environment
+
 fn main() {
     input! {
         n: usize,
@@ -16,55 +18,31 @@ fn main() {
         a: [i64; n],
     }
 
-    let mut a_cumsum = iter::once(0)
+    let acumsum = iter::once(0)
         .chain(a.iter().scan(0, |sum, x| {
-            *sum += *x;
+            *sum += x;
             Some(*sum)
         }))
         .collect_vec();
-    //  println!("cumsum {:?}", a_cumsum);
 
-    let mut cnt = (0..=n)
-        .scan(0, |sum, x| {
-            *sum += x;
-            Some(*sum)
-        })
-        .collect_vec();
-    //   println!("cnt {:?}", cnt);
+    let mut b = Vec::new();
+    b.push((0, 0));
+    for i in 1..=n {
+        let (x, y) = b[b.len() - 1];
+        b.push((x + i, y + acumsum[i]));
+    }
 
-    let b = a_cumsum
-        .iter()
-        .scan(0, |sum, x| {
-            *sum += *x;
-            Some(*sum)
-        })
-        .collect_vec();
-    //    println!("b {:?}", b);
-
+    let f = |x: usize| -> i64 {
+        let idx = b.upper_bound(&(x, 10_i64.pow(18))) - 1;
+        let res = b[idx].1 + (acumsum[x - b[idx].0]);
+        res
+    };
     for _ in 0..q {
         input! {
             l: usize,
             r: usize,
         }
 
-        let low = cnt.lower_bound(&l);
-        let up = cnt.lower_bound(&r);
-        //      println!("low {}", low);
-        //       println!("up {}", up);
-
-        let cl = cnt[low] - cnt[low - 1];
-        //     let cu = cnt[up] - cnt[up - 1];
-        let mut ans = 0;
-        //        println!("cl {} cu: {}", cl, cu);
-
-        if low < up {
-            ans += a_cumsum[cl] - a_cumsum[l - cnt[low - 1] - 1];
-            ans += a_cumsum[r - cnt[up - 1]];
-            ans += b[up - 1] - b[low];
-        } else {
-            ans += a_cumsum[r - cnt[up - 1]] - a_cumsum[l - cnt[low - 1] - 1];
-        }
-
-        println!("{}", ans);
+        println!("{}", f(r) - f(l - 1));
     }
 }
