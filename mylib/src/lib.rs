@@ -1,3 +1,4 @@
+pub mod dijkstra;
 pub mod grid;
 pub mod interval_set;
 pub mod math;

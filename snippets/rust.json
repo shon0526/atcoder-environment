@@ -277,6 +277,37 @@
       "macro_rules ! define_queries {(\\$ (\\$ (# [\\$ attr : meta ] ) * enum \\$ enum_name : ident : \\$ sig : ty {\\$ (\\$ pattern : pat => \\$ variant : ident \\$ ({\\$ (\\$ name : ident : \\$ marker : ty \\$ (, ) ? ) ,* } ) ? \\$ (, ) ? ) ,* } ) * ) => {\\$ (\\$ (# [\\$ attr ] ) * enum \\$ enum_name {\\$ (\\$ variant \\$ ({\\$ (\\$ name : <\\$ marker as proconio :: source :: Readable >:: Output ) ,* } ) ? ) ,* } impl proconio :: source :: Readable for \\$ enum_name {type Output = Self ; fn read < R : std :: io :: BufRead , S : proconio :: source :: Source < R >> (source : & mut S ) -> Self {#! [allow (unreachable_patterns ) ] match <\\$ sig as proconio :: source :: Readable >:: read (source ) {\\$ (\\$ pattern => \\$ enum_name ::\\$ variant \\$ ({\\$ (\\$ name : <\\$ marker as proconio :: source :: Readable >:: read (source ) ) ,* } ) ? ) ,* , _ => unreachable ! () } } } ) * } }"
     ]
   },
+  "dijkstra": {
+    "prefix": "dijkstra",
+    "body": [
+      "#[allow(clippy::module_inception)]",
+      "mod dijkstra {",
+      "    use std::cmp::Reverse;",
+      "    use std::collections::BinaryHeap;",
+      "    #[allow(dead_code)]",
+      "    pub fn dijkstra(graph: &[Vec<(usize, i64)>], s: usize) -> Vec<i64> {",
+      "        let n = graph.len();",
+      "        let mut dist = vec![i64::MAX; n];",
+      "        let mut hq = BinaryHeap::new();",
+      "        dist[s] = 0;",
+      "        hq.push(Reverse((dist[s], s)));",
+      "        while let Some(Reverse((c, now))) = hq.pop() {",
+      "            if dist[now] < c {",
+      "                continue;",
+      "            }",
+      "            for i in 0..graph[now].len() {",
+      "                let (nxt, w) = graph[now][i];",
+      "                if dist[nxt] > dist[now] + w {",
+      "                    dist[nxt] = dist[now] + w;",
+      "                    hq.push(Reverse((dist[nxt], nxt)))",
+      "                }",
+      "            }",
+      "        }",
+      "        dist",
+      "    }",
+      "}"
+    ]
+  },
   "grid": {
     "prefix": "grid",
     "body": [
@@ -325,6 +356,7 @@
   "interval-set": {
     "prefix": "interval-set",
     "body": [
+      "#[allow(clippy::module_inception)]",
       "pub mod interval_set {",
       "    use std::collections::BTreeMap;",
       "    #[derive(Debug, Clone, PartialEq, Eq, Hash)]",
@@ -452,6 +484,34 @@
       "        pub fn ranges(&self) -> impl Iterator<Item = (i64, i64)> + '_ {",
       "            self.map.iter().map(|(&l, &r)| (l, r))",
       "        }",
+      "    }",
+      "}"
+    ]
+  },
+  "math": {
+    "prefix": "math",
+    "body": [
+      "pub mod math {",
+      "    pub fn prime_fact(n: usize) -> Vec<(usize, usize)> {",
+      "        if n < 4 {",
+      "            return vec![(n, 1)];",
+      "        }",
+      "        let mut n = n;",
+      "        let mut fact = Vec::new();",
+      "        for i in 2..=n.isqrt() {",
+      "            if n % i == 0 {",
+      "                let mut cnt = 0;",
+      "                while n % i == 0 {",
+      "                    cnt += 1;",
+      "                    n /= i;",
+      "                }",
+      "                fact.push((i, cnt));",
+      "            }",
+      "        }",
+      "        if n != 1 {",
+      "            fact.push((n, 1));",
+      "        }",
+      "        fact",
       "    }",
       "}"
     ]
@@ -650,8 +710,8 @@
       "    pub trait SumIdentity: Copy + Ord + fmt::Display {",
       "        fn e() -> Self;",
       "    }",
-      "    macro_rules ! impl_max_identity {(\\$ (\\$ t : ty ) , * ) => {\\$ (impl SumIdentity for \\$ t {fn e () -> Self {0 } } ) * } ; }",
-      "    impl_max_identity!(i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize);",
+      "    macro_rules ! impl_sum_identity {(\\$ (\\$ t : ty ) , * ) => {\\$ (impl SumIdentity for \\$ t {fn e () -> Self {0 } } ) * } ; }",
+      "    impl_sum_identity!(i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize);",
       "    #[derive(Debug)]",
       "    pub struct SegTree<T> {",
       "        pub size: usize,",
@@ -776,6 +836,9 @@
       "    }",
       "    pub fn same(&mut self, x: usize, y: usize) -> bool {",
       "        self.find(x) == self.find(y)",
+      "    }",
+      "    fn size(x: usize) -> usize {",
+      "        todo!();",
       "    }",
       "}"
     ]
