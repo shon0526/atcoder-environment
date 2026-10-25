@@ -12,7 +12,6 @@ fn main() {
         q: usize,
     }
 
-    let mut set = HashSet::new();
     let mut map = HashMap::new();
 
     let mut id = 1;
@@ -20,12 +19,11 @@ fn main() {
         input! {
             s: String,
         }
-        if set.contains(&s) {
+        if map.contains_key(&s) {
             println!("{}", map[&s]);
         } else {
             println!("{}", id);
             *map.entry(s.clone()).or_insert(id);
-            set.insert(s.clone());
             id += 1;
         }
     }

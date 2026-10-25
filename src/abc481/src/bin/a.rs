@@ -12,5 +12,7 @@ fn main() {
         a: usize,
         b: usize,
     }
-    println!("{}", (a + b) / 10 + 1);
+    //    println!("{}", (a + b) / 10 + 1);
+    let ans = (a + b).to_string().len();
+    println!("{}", ans);
 }

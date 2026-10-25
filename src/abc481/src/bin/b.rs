@@ -16,24 +16,16 @@ fn main() {
 
     let mut ans = 0;
 
-    if a[0] == k {
-        ans += 1;
-    }
-
-    for i in 1..n {
-        if a[i - 1] == k && a[i] == k {
-            ans += 1;
-        }
-        if a[i - 1] > k && a[i] <= k {
-            ans += 1;
-        }
-        if a[i - 1] < k && a[i] >= k {
+    for i in 0..n {
+        if a[i] == k {
             ans += 1;
         }
     }
 
-    if a[0] == a[1] {
-        ans += 1;
+    for i in 0..n - 1 {
+        if a[i] < k && k < a[i + 1] || a[i + 1] < k && k < a[i] {
+            ans += 1;
+        }
     }
 
     println!("{ans}");
