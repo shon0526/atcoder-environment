@@ -12,4 +12,5 @@ members = [
     "src/abc473/calc_473",
     "src/abc474/calc",
     "src/abc387/calc_387",
+    "src/abc363/calc_363",
 ]
